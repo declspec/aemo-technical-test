@@ -4,11 +4,13 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const createEnvironment = require('./env/env');
 
 module.exports = wrap(function(_env) {
     const env = Object.assign({}, process.env, _env);
     const environment = (env.NODE_ENV || 'development').toLowerCase();
     const packagePath = (env.PACKAGE_PATH || 'latest');
+    const envConfig = createEnvironment(environment, env.noOverrides);
 
     const config = {
         node: false,
@@ -21,7 +23,7 @@ module.exports = wrap(function(_env) {
             filename: `${packagePath}/[name].js`,
             chunkFilename: getAssetFilename('js'),
             path: path.resolve(__dirname, 'dist'),
-            publicPath: '/',
+            publicPath: `${envConfig.urls.baseHref}/`,
             libraryTarget: 'umd'
         },
         resolve: {
